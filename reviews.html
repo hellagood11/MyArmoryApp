@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyArmoryApp - Reviews</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!--Navigation bar-->
+        <nav class = "navbar">
+            <div class = "nav-brand">MyArmoryApp</div>
+            <ul class = "nav-links">
+                <li> <a href = "index.html">Home</a> </li>
+                <li> <a href = "armory.html">Armory & Ammo</a> </li>
+                <li> <a href = "ballistics.html">Ballistics</a> </li>
+                <li> <a href = "reviews.html">Reviews</a> </li>
+            </ul>
+        </nav>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="reviews">
+        <h1>User Reviews</h1>
+        <p>Read what our users have to say about MyArmoryApp.</p>
+        <!-- Add review cards or testimonials here -->
+         <div id="reviews-list" class="reviews-grid">
+            <div class="card review-card">
+                <div class="review-header">
+                    <strong>John Doe</strong>
+                    <span class="rating">★★★★★</span>
+                </div>
+                <p class="review-text">This app has completely changed how I manage my armory. </p>
+            </div>
+
+            <div class="card review-card">
+                <div class="review-header">
+                    <strong>Jane Smith</strong>
+                    <span class="rating">★★★★★</span>
+                </div>
+                <p class="review-text">The ballistics calculator is incredibly accurate!</p>
+            </div>
+         </div>
+
+         <!--Feedback submission form-->
+         <div class="feedback-form-box">
+            <h3>Submit Your Feedback</h3>
+            <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+                <div class="form-group">
+                    <label for="reviewerName">Your Name:</label>
+                    <input type="text" id="reviewerName" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="reviewRating">Rating:</label>
+                    <select id="reviewRating" class="input-field" required>
+                        <option value="">Select Rating</option>
+                        <option value="1">1 Star - Poor</option>
+                        <option value="2">2 Stars - Fair</option>
+                        <option value="3">3 Stars - Good</option>
+                        <option value="4">4 Stars - Very Good</option>
+                        <option value="5">5 Stars - Excellent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewerComments">Your Feedback:</label>
+                    <textarea id="reviewerComments" class="input-field" rows="4" placeholder="Share your experience with MyArmoryApp..." required></textarea>
+                </div>
+                <button type="submit" class="cta-btn">Submit Review</button>
+            </form>
+         </div>
+    </section>
+    <!--Footer-->
+    <footer class = "footer">
+        <p>&copy; 2026 MyArmoryApp. </p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
