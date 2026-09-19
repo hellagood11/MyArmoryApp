@@ -13,7 +13,6 @@ function escapeHtml(str) {
 //handle form submission
 function handleFeedbackSubmit(event) {
     event.preventDefault();
-    // prevent from HTML injection by escaping special characters in the input
 
     //get the values from the form
     const nameInput = document.getElementById('reviewerName');
