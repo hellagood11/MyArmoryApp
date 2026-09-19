@@ -1,6 +1,19 @@
+function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
+
 //handle form submission
-function handleFeedbackSubmit(event){
+function handleFeedbackSubmit(event) {
     event.preventDefault();
+    // prevent from HTML injection by escaping special characters in the input
 
     //get the values from the form
     const nameInput = document.getElementById('reviewerName');
@@ -24,10 +37,10 @@ function handleFeedbackSubmit(event){
     reviewCard.className = 'card review-card';
     reviewCard.innerHTML = `
         <div class="review-header">
-            <strong>${escapteHtml(name)}</strong>
+            <strong>${escapeHtml(name)}</strong>
             <span class="rating">${stars}</span>
         </div>
-        <p>${escapteHtml(comments)}</p>
+        <p>${escapeHtml(comments)}</p>
     `;
 
     //add the card to the list of reviews
@@ -37,24 +50,5 @@ function handleFeedbackSubmit(event){
     }
 
     document.getElementById('feedbackForm').reset(); // reset the form after submission
-    // prevent from HTML injection by escaping special characters in the input
-    function escapteHtml(str) {
-        return str.replace(/[&<>'"]/g,
-            tag => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                "'": '&#39;',
-                '"': '&quot;'
-            }[tag] || tag)
-        );
-    }
 
-    //event listener for the form submission
-    document.addEventListener('DOMContentLoaded', () => {
-        const feedbackForm = document.getElementById('feedbackForm');
-        if (feedbackForm) {
-            feedbackForm.addEventListener('submit', handleFeedbackSubmit);
-        }
-    });
 }
