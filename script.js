@@ -35,6 +35,7 @@ function handleFeedbackSubmit(event) {
     // build new review object
     const reviewCard = document.createElement('div');
     reviewCard.className = 'card review-card';
+    reviewCard.dataset.rating = String(ratingValue);
     reviewCard.innerHTML = `
         <div class="review-header">
             <strong>${escapeHtml(name)}</strong>
@@ -47,10 +48,33 @@ function handleFeedbackSubmit(event) {
     const reviewsList = document.getElementById('reviews-list');
     if (reviewsList) {
         reviewsList.prepend(reviewCard); // add new review to the top of the list
+        updateReviewFilter();
     }
 
     document.getElementById('feedbackForm').reset(); // reset the form after submission
 
+}
+
+function updateReviewFilter() {
+    const reviewsList = document.getElementById('reviews-list');
+    const ratingFilter = document.getElementById('ratingFilter');
+    const reviewCount = document.getElementById('reviewCount');
+
+    if (!reviewsList || !ratingFilter || !reviewCount) return;
+
+    const cards = reviewsList.querySelectorAll('.review-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const matchesRating =
+            ratingFilter.value === 'all' ||
+            card.dataset.rating === ratingFilter.value;
+
+        card.classList.toggle('filter-hidden', !matchesRating);
+        if (matchesRating) visibleCount++;
+    });
+
+    reviewCount.textContent = `Showing ${visibleCount} of ${cards.length} reviews`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -200,4 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateQuantityField();
     //initially filter the inventory to show all items when the page loads
     filterInventory();
+// Set up the review filter functionality
+    const ratingFilter = document.getElementById('ratingFilter');
+// If the rating filter exists on the page, add an event listener to update the review filter when the selection changes.
+    if (ratingFilter) {
+        ratingFilter.addEventListener('change', updateReviewFilter);
+        updateReviewFilter();
+    }
 });
