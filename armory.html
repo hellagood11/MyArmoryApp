@@ -21,10 +21,10 @@
     <main class="container">
         <h1 class="section-title">Armory &amp; Ammo Inventory</h1>
         <p>Keep track of your equipment and ammunition reserves.</p>
-
+        <!-- Inventory management section -->
         <section aria-labelledby="inventory-heading">
             <h2 id="inventory-heading">Your Inventory</h2>
-
+            <!-- Search and filter controls -->
             <div class="inventory-tools">
                 <label for="inventorySearch">Search inventory</label>
                 <input id="inventorySearch" class="input-field" type="search"
@@ -39,7 +39,7 @@
             </div>
 
             <p id="inventoryStatus" aria-live="polite"></p>
-
+            <!-- Inventory items will be displayed here -->
             <div id="inventoryList" class="features-grid">
                 <article class="card inventory-card"
                          data-type="firearm"
@@ -80,7 +80,7 @@
 
             <p id="inventoryNotice" aria-live="polite"></p>
         </section>
-
+        <!--Form to add inventory items-->
         <section class="feedback-form-box" aria-labelledby="add-item-heading">
             <h2 id="add-item-heading">Add an Inventory Item</h2>
             <form id="inventoryForm">
