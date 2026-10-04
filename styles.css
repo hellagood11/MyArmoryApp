@@ -254,3 +254,30 @@ footer {
   border-top: 1px solid #2e3640;
   margin-top: 4rem;
 }
+
+.inventory-tools {
+    display: grid;
+    grid-template-columns: auto minmax(180px, 1fr) auto minmax(150px, 0.5fr);
+    gap: 0.75rem;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.inventory-card[hidden] {
+    display: none;
+}
+
+.inventory-card {
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.inventory-card:hover {
+    border-color: #d4af37;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 650px) {
+    .inventory-tools {
+        grid-template-columns: 1fr;
+    }
+}
