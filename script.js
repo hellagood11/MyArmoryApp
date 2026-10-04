@@ -70,11 +70,12 @@ function updateReviewFilter() {
             ratingFilter.value === 'all' ||
             card.dataset.rating === ratingFilter.value;
 
-        card.classList.toggle('filter-hidden', !matchesRating);
+        card.hidden = !matchesRating;
         if (matchesRating) visibleCount++;
     });
 
-    reviewCount.textContent = `Showing ${visibleCount} of ${cards.length} reviews`;
+    reviewCount.textContent =
+        `Showing ${visibleCount} of ${cards.length} reviews`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

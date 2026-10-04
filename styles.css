@@ -264,7 +264,7 @@ footer {
 }
 
 .inventory-card[hidden] {
-    display: none;
+    display: none !important;
 }
 
 .inventory-card {
