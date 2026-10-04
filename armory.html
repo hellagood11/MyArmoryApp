@@ -7,19 +7,117 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!--Navigation bar-->
-        <nav class = "navbar">
-            <div class = "nav-brand">MyArmoryApp</div>
-            <ul class = "nav-links">
-                <li> <a href = "index.html">Home</a> </li>
-                <li> <a href = "dashboard.html">Dashboard</a> </li>
-                <li> <a href = "armory.html">Armory & Ammo</a> </li>
-                <li> <a href = "ballistics.html">Ballistics</a> </li>
-                <li> <a href = "reviews.html">Reviews</a> </li>
-            </ul>
-        </nav>
-    
-    <h2 class= "Section Title">Armory & Ammo Inventory</h2>
-    <h3 class= "Section Subtitle">Under Construction</h3>
+    <nav class="navbar">
+        <div class="nav-brand">MyArmoryApp</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="armory.html">Armory &amp; Ammo</a></li>
+            <li><a href="ballistics.html">Ballistics</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1 class="section-title">Armory &amp; Ammo Inventory</h1>
+        <p>Keep track of your equipment and ammunition reserves.</p>
+
+        <section aria-labelledby="inventory-heading">
+            <h2 id="inventory-heading">Your Inventory</h2>
+
+            <div class="inventory-tools">
+                <label for="inventorySearch">Search inventory</label>
+                <input id="inventorySearch" class="input-field" type="search"
+                       placeholder="Search name or caliber">
+
+                <label for="inventoryTypeFilter">Show</label>
+                <select id="inventoryTypeFilter" class="input-field">
+                    <option value="all">All items</option>
+                    <option value="firearm">Firearms</option>
+                    <option value="ammunition">Ammunition</option>
+                </select>
+            </div>
+
+            <p id="inventoryStatus" aria-live="polite"></p>
+
+            <div id="inventoryList" class="features-grid">
+                <article class="card inventory-card"
+                         data-type="firearm"
+                         data-search="sporting rifle 1 5.56x45mm">
+                    <h3>Sporting Rifle 1</h3>
+                    <p>Type: Firearm</p>
+                    <p>Caliber: 5.56x45mm</p>
+                    <p>Quantity: 1</p>
+                    <button class="cta-btn details-toggle" type="button"
+                            aria-expanded="false">Show details</button>
+                    <p class="item-details" hidden>Personal inventory entry.</p>
+                </article>
+
+                <article class="card inventory-card"
+                         data-type="firearm"
+                         data-search="sporting pistol 1 9mm">
+                    <h3>Sporting Pistol 1</h3>
+                    <p>Type: Firearm</p>
+                    <p>Caliber: 9mm</p>
+                    <p>Quantity: 1</p>
+                    <button class="cta-btn details-toggle" type="button"
+                            aria-expanded="false">Show details</button>
+                    <p class="item-details" hidden>Personal inventory entry.</p>
+                </article>
+
+                <article class="card inventory-card"
+                         data-type="ammunition"
+                         data-search="9mm practice ammunition 250 9mm">
+                    <h3>Practice Ammunition</h3>
+                    <p>Type: Ammunition</p>
+                    <p>Caliber: 9mm</p>
+                    <p>Quantity: 250 rounds</p>
+                    <button class="cta-btn details-toggle" type="button"
+                            aria-expanded="false">Show details</button>
+                    <p class="item-details" hidden>Personal ammunition-reserve entry.</p>
+                </article>
+            </div>
+
+            <p id="inventoryNotice" aria-live="polite"></p>
+        </section>
+
+        <section class="feedback-form-box" aria-labelledby="add-item-heading">
+            <h2 id="add-item-heading">Add an Inventory Item</h2>
+            <form id="inventoryForm">
+                <div class="form-group">
+                    <label for="itemName">Item name</label>
+                    <input id="itemName" class="input-field" type="text" required maxlength="60">
+                </div>
+
+                <div class="form-group">
+                    <label for="itemType">Item type</label>
+                    <select id="itemType" class="input-field" required>
+                        <option value="firearm">Firearm</option>
+                        <option value="ammunition">Ammunition</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemCaliber">Caliber or cartridge</label>
+                    <input id="itemCaliber" class="input-field" type="text"
+                           required maxlength="40">
+                </div>
+
+                <div class="form-group" id="quantityGroup">
+                    <label for="itemQuantity">Quantity</label>
+                    <input id="itemQuantity" class="input-field" type="number"
+                           min="0" step="1" required>
+                </div>
+
+                <button class="cta-btn" type="submit">Add to Inventory</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 MyArmoryApp.</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
