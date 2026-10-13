@@ -1,3 +1,4 @@
+//function to handle escaping HTML special characters
 function escapeHtml(str) {
     return str.replace(/[&<>'"]/g,
         tag => ({
