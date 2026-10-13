@@ -287,6 +287,59 @@ footer {
     display: none;
 }
 
+.results-grid {
+    margin-top: 1rem;
+}
+
+.trajectory-card {
+    margin-bottom: 3rem;
+}
+
+.trajectory-card h2 {
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+}
+
+.trajectory-chart {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.trajectory-chart svg {
+    display: block;
+    width: 100%;
+    min-width: 520px;
+    height: auto;
+}
+
+.chart-grid-line {
+    stroke: #3a424c;
+    stroke-width: 1;
+}
+
+.chart-label,
+.chart-axis-label {
+    fill: #c4ccd5;
+    font-size: 12px;
+}
+
+.chart-axis-label {
+    font-size: 14px;
+}
+
+.trajectory-line {
+    fill: none;
+    stroke: #d4af37;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.form-message {
+    color: #ffb4a9;
+    margin-top: 0.75rem;
+}
+
 @media (max-width: 650px) {
     .inventory-tools {
         grid-template-columns: 1fr;

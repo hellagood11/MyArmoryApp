@@ -234,3 +234,142 @@ document.addEventListener('DOMContentLoaded', () => {
         updateReviewFilter();
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('ballisticsForm');
+    if (!form) return;
+
+    const message = document.getElementById('ballisticsMessage');
+    const results = document.getElementById('ballisticsResults');
+    const chartContainer = document.getElementById('graph-output');
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+
+    function makeSvgElement(name, attributes = {}) {
+        const element = document.createElementNS(svgNamespace, name);
+        Object.entries(attributes).forEach(([attribute, value]) => {
+            element.setAttribute(attribute, String(value));
+        });
+        return element;
+    }
+
+    function renderDropChart(velocity) {
+        const distances = Array.from({ length: 31 }, (_, index) => index * 10);
+        const drops = distances.map(distance => {
+            if (distance === 0) return 0;
+            const timeOfFlight = (distance * 3) / velocity;
+            return -16.087 * (timeOfFlight ** 2) * 12;
+        });
+
+        if (!drops.every(Number.isFinite)) {
+            throw new RangeError('The entered velocity is too low to plot a finite trajectory.');
+        }
+
+        const chart = makeSvgElement('svg', {
+            viewBox: '0 0 700 300',
+            role: 'img',
+            'aria-labelledby': 'drop-chart-title drop-chart-description',
+            focusable: 'false'
+        });
+        const title = makeSvgElement('title', { id: 'drop-chart-title' });
+        title.textContent = 'Estimated bullet drop over distance';
+        const description = makeSvgElement('desc', { id: 'drop-chart-description' });
+        description.textContent =
+            `Estimated drop from 0 to 300 yards for a muzzle velocity of ${velocity} feet per second.`;
+        chart.append(title, description);
+
+        const plot = { left: 62, right: 680, top: 25, bottom: 238 };
+        const maximumDrop = Math.max(...drops.map(drop => Math.abs(drop)), 1);
+        const pointFor = (distance, drop) => {
+            const x = plot.left + (distance / 300) * (plot.right - plot.left);
+            const y = plot.top + (Math.abs(drop) / maximumDrop) * (plot.bottom - plot.top);
+            return `${x},${y}`;
+        };
+
+        [0, 0.5, 1].forEach(fraction => {
+            const y = plot.top + fraction * (plot.bottom - plot.top);
+            const grid = makeSvgElement('line', {
+                x1: plot.left, y1: y, x2: plot.right, y2: y,
+                class: 'chart-grid-line'
+            });
+            chart.append(grid);
+
+            const label = makeSvgElement('text', {
+                x: plot.left - 10, y: y + 4, 'text-anchor': 'end',
+                class: 'chart-label'
+            });
+            label.textContent = `${(-maximumDrop * fraction).toFixed(0)} in`;
+            chart.append(label);
+        });
+
+        [0, 100, 200, 300].forEach(distance => {
+            const x = plot.left + (distance / 300) * (plot.right - plot.left);
+            chart.append(makeSvgElement('line', {
+                x1: x, y1: plot.top, x2: x, y2: plot.bottom,
+                class: 'chart-grid-line'
+            }));
+            const label = makeSvgElement('text', {
+                x, y: plot.bottom + 22, 'text-anchor': 'middle',
+                class: 'chart-label'
+            });
+            label.textContent = String(distance);
+            chart.append(label);
+        });
+
+        chart.append(makeSvgElement('polyline', {
+            points: distances.map((distance, index) => pointFor(distance, drops[index])).join(' '),
+            class: 'trajectory-line'
+        }));
+
+        const xLabel = makeSvgElement('text', {
+            x: (plot.left + plot.right) / 2, y: 292,
+            'text-anchor': 'middle', class: 'chart-axis-label'
+        });
+        xLabel.textContent = 'Distance (yards)';
+        chart.append(xLabel);
+
+        chartContainer.replaceChildren(chart);
+    }
+
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        message.textContent = '';
+
+        const grains = Number(form.elements.grains.value);
+        const velocity = Number(form.elements.velocity.value);
+        if (!Number.isFinite(grains) || grains <= 0 ||
+            !Number.isFinite(velocity) || velocity <= 0) {
+            message.textContent = 'Enter a bullet weight and muzzle velocity greater than zero.';
+            results.hidden = true;
+            return;
+        }
+
+        const kilograms = grains / 15432.3584;
+        const metersPerSecond = velocity * 0.3048;
+        const energyJoules = 0.5 * kilograms * (metersPerSecond ** 2);
+        const momentumMetric = kilograms * metersPerSecond;
+        const energyFootPounds = (grains * (velocity ** 2)) / 450436;
+        const momentumImperial = (grains * velocity) / 225218;
+
+        if (![energyJoules, momentumMetric, energyFootPounds, momentumImperial]
+            .every(Number.isFinite)) {
+            message.textContent = 'Those values are outside the calculator’s supported range.';
+            results.hidden = true;
+            return;
+        }
+
+        try {
+            renderDropChart(velocity);
+        } catch (error) {
+            if (!(error instanceof RangeError)) throw error;
+            message.textContent = error.message;
+            results.hidden = true;
+            return;
+        }
+
+        document.getElementById('energy-imp').textContent = energyFootPounds.toFixed(2);
+        document.getElementById('energy-metric').textContent = energyJoules.toFixed(2);
+        document.getElementById('momentum-imp').textContent = momentumImperial.toFixed(4);
+        document.getElementById('momentum-metric').textContent = momentumMetric.toFixed(4);
+        results.hidden = false;
+    });
+});
