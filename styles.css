@@ -99,6 +99,10 @@ body {
 }
 
 /* Main Container & Grid */
+.main-content .features-grid > .card {
+  display: flex;
+  flex-direction: column;
+}
 .container {
   max-width: 1200px;
   margin: 2rem auto;
@@ -142,6 +146,17 @@ body {
   color: #9aa5b1;
   font-size: 0.95rem;
   margin-bottom: 1rem;
+}
+
+.card ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+  color: #9aa5b1;
+  font-size: 0.95rem;
+}
+
+.card button {
+  margin-top: auto;
 }
 /*badge Styles */
 .badge-free {

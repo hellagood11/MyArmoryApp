@@ -234,16 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateReviewFilter();
     }
 });
-
+// event listener for the feedback form submission
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('ballisticsForm');
     if (!form) return;
-
+    // Get references to the message, results, and chart container elements
     const message = document.getElementById('ballisticsMessage');
     const results = document.getElementById('ballisticsResults');
     const chartContainer = document.getElementById('graph-output');
     const svgNamespace = 'http://www.w3.org/2000/svg';
-
+    //function to create an SVG element with specified attributes for the bullet drop chart
     function makeSvgElement(name, attributes = {}) {
         const element = document.createElementNS(svgNamespace, name);
         Object.entries(attributes).forEach(([attribute, value]) => {
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return element;
     }
-
+    // function to render the bullet drop chart based on the provided muzzle velocity
     function renderDropChart(velocity) {
         const distances = Array.from({ length: 31 }, (_, index) => index * 10);
         const drops = distances.map(distance => {
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeOfFlight = (distance * 3) / velocity;
             return -16.087 * (timeOfFlight ** 2) * 12;
         });
-
+        // Check if all calculated drops are finite numbers; if not, throw an error indicating that the velocity is too low to plot a finite trajectory.
         if (!drops.every(Number.isFinite)) {
             throw new RangeError('The entered velocity is too low to plot a finite trajectory.');
         }
@@ -270,13 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
             'aria-labelledby': 'drop-chart-title drop-chart-description',
             focusable: 'false'
         });
+        // Add a title and description to the SVG 
         const title = makeSvgElement('title', { id: 'drop-chart-title' });
         title.textContent = 'Estimated bullet drop over distance';
         const description = makeSvgElement('desc', { id: 'drop-chart-description' });
         description.textContent =
             `Estimated drop from 0 to 300 yards for a muzzle velocity of ${velocity} feet per second.`;
         chart.append(title, description);
-
+        // Define the plotting area for the chart and calculate the maximum drop value to scale the y-axis appropriately.
         const plot = { left: 62, right: 680, top: 25, bottom: 238 };
         const maximumDrop = Math.max(...drops.map(drop => Math.abs(drop)), 1);
         const pointFor = (distance, drop) => {
@@ -284,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = plot.top + (Math.abs(drop) / maximumDrop) * (plot.bottom - plot.top);
             return `${x},${y}`;
         };
-
+        // Draw horizontal grid lines and labels for the y-axis at 0, 50%, and 100% of the maximum drop.
         [0, 0.5, 1].forEach(fraction => {
             const y = plot.top + fraction * (plot.bottom - plot.top);
             const grid = makeSvgElement('line', {
@@ -292,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 class: 'chart-grid-line'
             });
             chart.append(grid);
-
+            // Add labels for the y-axis indicating the drop in inches at each grid line.
             const label = makeSvgElement('text', {
                 x: plot.left - 10, y: y + 4, 'text-anchor': 'end',
                 class: 'chart-label'
@@ -300,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = `${(-maximumDrop * fraction).toFixed(0)} in`;
             chart.append(label);
         });
-
+        // Draw vertical grid lines and labels for the x-axis at 0, 100, 200, and 300 yards.
         [0, 100, 200, 300].forEach(distance => {
             const x = plot.left + (distance / 300) * (plot.right - plot.left);
             chart.append(makeSvgElement('line', {
@@ -314,12 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = String(distance);
             chart.append(label);
         });
-
+        // Draw the trajectory line representing the bullet drop over distance using a polyline element.
         chart.append(makeSvgElement('polyline', {
             points: distances.map((distance, index) => pointFor(distance, drops[index])).join(' '),
             class: 'trajectory-line'
         }));
-
+        // Add labels for the y-axis and x-axis to indicate the units of measurement.
         const xLabel = makeSvgElement('text', {
             x: (plot.left + plot.right) / 2, y: 292,
             'text-anchor': 'middle', class: 'chart-axis-label'
@@ -329,11 +330,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chartContainer.replaceChildren(chart);
     }
-
+    // Add an event listener to the ballistics form to handle the submission and perform calculations for energy and momentum based on the input values.
     form.addEventListener('submit', event => {
         event.preventDefault();
         message.textContent = '';
-
+        // Get the bullet weight in grains and muzzle velocity in feet per second from the form inputs, converting them to numbers.
         const grains = Number(form.elements.grains.value);
         const velocity = Number(form.elements.velocity.value);
         if (!Number.isFinite(grains) || grains <= 0 ||
@@ -342,21 +343,21 @@ document.addEventListener('DOMContentLoaded', () => {
             results.hidden = true;
             return;
         }
-
+        // Convert grains to kilograms and feet per second to meters per second for calculations.
         const kilograms = grains / 15432.3584;
         const metersPerSecond = velocity * 0.3048;
         const energyJoules = 0.5 * kilograms * (metersPerSecond ** 2);
         const momentumMetric = kilograms * metersPerSecond;
         const energyFootPounds = (grains * (velocity ** 2)) / 450436;
         const momentumImperial = (grains * velocity) / 225218;
-
+        // Check if the calculated energy and momentum values are finite numbers; if not, display an error message indicating that the values are outside the supported range.
         if (![energyJoules, momentumMetric, energyFootPounds, momentumImperial]
             .every(Number.isFinite)) {
             message.textContent = 'Those values are outside the calculator’s supported range.';
             results.hidden = true;
             return;
         }
-
+        // Attempt to render the bullet drop chart with the provided velocity, handling any RangeError that may occur if the velocity is too low to plot a finite trajectory.
         try {
             renderDropChart(velocity);
         } catch (error) {
@@ -365,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             results.hidden = true;
             return;
         }
-
+        // Update the results section with the calculated energy and momentum values, formatted to two decimal places for energy and four decimal places for momentum.
         document.getElementById('energy-imp').textContent = energyFootPounds.toFixed(2);
         document.getElementById('energy-metric').textContent = energyJoules.toFixed(2);
         document.getElementById('momentum-imp').textContent = momentumImperial.toFixed(4);
