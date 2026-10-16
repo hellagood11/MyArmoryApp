@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyArmoryApp - Ballistics</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-brand">MyArmoryApp</div>
@@ -27,13 +29,13 @@
             <form id="ballisticsForm" novalidate>
                 <div class="form-group">
                     <label for="grains">Bullet weight (grains)</label>
-                    <input class="input-field" id="grains" name="grains" type="number"
-                           min="0.01" step="any" required inputmode="decimal">
+                    <input class="input-field" id="grains" name="grains" type="number" min="0.01" step="any" required
+                        inputmode="decimal">
                 </div>
                 <div class="form-group">
                     <label for="velocity">Muzzle velocity (feet per second)</label>
-                    <input class="input-field" id="velocity" name="velocity" type="number"
-                           min="0.01" step="any" required inputmode="decimal">
+                    <input class="input-field" id="velocity" name="velocity" type="number" min="0.01" step="any"
+                        required inputmode="decimal">
                 </div>
                 <button class="cta-btn" id="calc-btn" type="submit">Calculate</button>
                 <p id="ballisticsMessage" class="form-message" aria-live="polite"></p>
@@ -55,10 +57,31 @@
                 </article>
             </div>
 
+
             <section class="card trajectory-card" aria-labelledby="trajectory-heading">
                 <h2 id="trajectory-heading">Estimated bullet drop</h2>
-                <p>Gravity-only estimate from the muzzle, assuming a level bore. This does not account for sight zero, drag, or environmental conditions.</p>
+                <p>Gravity-only estimate from the muzzle, assuming a level bore. This does not account for sight zero,
+                    drag, or
+                    environmental conditions.</p>
                 <div id="graph-output" class="trajectory-chart"></div>
+            </section>     
+
+            <section class="card drop-table-card">
+                <h2>Bullet Drop Table</h2>
+                <div id="drop-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Distance (yd)</th>
+                                <th>Drop (in)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="drop-table-body">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
             </section>
         </section>
     </main>
@@ -69,4 +92,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

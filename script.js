@@ -329,6 +329,22 @@ document.addEventListener('DOMContentLoaded', () => {
         chart.append(xLabel);
 
         chartContainer.replaceChildren(chart);
+        createDropTable(distances, drops);
+    }
+
+    function createDropTable(distances, drops){
+        const tableBody = document.getElementById('drop-table-body');
+        tableBody.innerHTML = '';
+        distances.forEach((distance, index) => {
+            const row = document.createElement('tr');
+            const distanceCell = document.createElement('td');
+            distanceCell.textContent = distance;
+            const dropCell = document.createElement('td');
+            dropCell.textContent = drops[index].toFixed(2);
+            row.appendChild(distanceCell);
+            row.appendChild(dropCell);
+            tableBody.appendChild(row);
+        });
     }
     // Add an event listener to the ballistics form to handle the submission and perform calculations for energy and momentum based on the input values.
     form.addEventListener('submit', event => {
