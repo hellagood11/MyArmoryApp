@@ -352,15 +352,18 @@ document.addEventListener('DOMContentLoaded', () => {
     updateQuantityField();
     filterInventory();
 
-    // Keep the Reviews page functionality intact.
+    
+});
+document.addEventListener('DOMContentLoaded', () => {
     const ratingFilter = document.getElementById('ratingFilter');
 
-    if (ratingFilter) {
-        ratingFilter.addEventListener('change', updateReviewFilter);
-        updateReviewFilter();
-    }
-});
+    if (!ratingFilter) return;
 
+    ratingFilter.addEventListener('change', updateReviewFilter);
+
+    // Apply the initial filter and update the review count.
+    updateReviewFilter();
+});
 // event listener for the feedback form submission
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('ballisticsForm');

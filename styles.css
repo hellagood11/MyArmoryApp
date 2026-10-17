@@ -409,7 +409,9 @@ footer {
 .review-card.filter-hidden {
     display: none;
 }
-
+.review-card[hidden] {
+    display: none !important;
+}
 .results-grid {
     margin-top: 1rem;
 }
