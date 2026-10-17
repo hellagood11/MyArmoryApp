@@ -1,25 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyArmoryApp - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!--Navigation bar-->
-        <nav class = "navbar">
-            <div class = "nav-brand">MyArmoryApp</div>
-            <ul class = "nav-links">
-                <li> <a href = "index.html">Home</a> </li>
-                <li> <a href = "armory.html">Armory & Ammo</a> </li>
-                <li> <a href = "ballistics.html">Ballistics</a> </li>
-                <li> <a href = "reloading.html">Reloading</a> </li>
-                <li> <a href = "reviews.html">Reviews</a> </li>
-            </ul>
-        </nav>
-    
-    <h2 class= "Section Title">Dashboard</h2>
-    <h3 class= "Section Subtitle">Under Construction</h3>
+    <nav class="navbar">
+        <div class="nav-brand">MyArmoryApp</div>
+        <ul class="nav-links">
+            <li> <a href="index.html">Home</a> </li>
+            <li> <a href="armory.html">Armory & Ammo</a> </li>
+            <li> <a href="ballistics.html">Ballistics</a> </li>
+            <li> <a href="reloading.html">Reloading</a> </li>
+            <li> <a href="reviews.html">Reviews</a> </li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h2 class="section-title">Reloading Data</h2>
+        <h3 class="section-subtitle">Pick your cartridge and view a the recommended load.</h3>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="source-filter">Filter by source table:</label>
+                <select id="source-filter">
+                    <option value="all">All Files</option>
+                    <option value="Pistol">Pistol</option>
+                    <option value="Rifle">Rifle</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="cartridge-filter">Filter by cartridge:</label>
+                <select id="cartridge-filter">
+                    <option value="all">All Cartridges</option>
+                </select>
+            </div>
+        </div>
+
+        <p id="loading">Loading and processing data...</p>
+
+        <div class="table-container">
+            <table id="reloading-table">
+                <thead>
+                    <tr id="table-header"></tr>
+                </thead>
+
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>

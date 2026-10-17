@@ -390,3 +390,203 @@ document.addEventListener('DOMContentLoaded', () => {
         results.hidden = false;
     });
 });
+
+const csvFiles = [
+    { path: "pistolReloading.csv", source: "Pistol" },
+    { path: "rifleReloading.csv", source: "Rifle" }
+];
+
+
+let allRows = [];
+let headers = [];
+let cartridgeColumn = "";
+
+async function loadReloadingData() {
+    const loading = document.getElementById("loading");
+    const headerRow = document.getElementById("table-header");
+    const tableBody = document.getElementById("table-body");
+    const table = document.getElementById("reloading-table");
+
+    try {
+        const results = await Promise.all(
+            csvFiles.map(file => {
+                return new Promise((resolve, reject) => {
+                    Papa.parse(file.path, {
+                        download: true,
+                        header: true,
+                        skipEmptyLines: "greedy",
+
+                        complete: result => {
+                            if (result.errors.length > 0) {
+                                console.warn(
+                                    `Parsing issues in ${file.path}:`,
+                                    result.errors
+                                );
+                            }
+
+                            resolve({
+                                ...result,
+                                source: file.source
+                            });
+                        },
+
+                        error: error => reject(
+                            new Error(`${file.path}: ${error.message}`)
+                        )
+                    });
+                });
+            })
+        );
+
+        headers = results[0].meta.fields || [];
+
+        if (headers.length === 0) {
+            throw new Error("No column headers found.");
+        }
+
+        // Check that both files have the same columns.
+        const matchingHeaders = results.every(result => {
+            const fileHeaders = result.meta.fields || [];
+
+            return headers.length === fileHeaders.length &&
+                headers.every(header => fileHeaders.includes(header));
+        });
+
+        if (!matchingHeaders) {
+            throw new Error(
+                "The CSV files have different column headers."
+            );
+        }
+
+        // Find the cartridge column, ignoring capitalization.
+        cartridgeColumn = headers.find(
+            header => header.trim().toLowerCase() === "cartridge"
+        );
+
+        if (!cartridgeColumn) {
+            throw new Error(
+                'Could not find a "Cartridge" column in the CSV headers.'
+            );
+        }
+
+        // Combine rows and attach their source labels.
+        allRows = results.flatMap(result =>
+            result.data.map(row => ({
+                ...row,
+                Source: result.source
+            }))
+        );
+
+        buildTableHeaders();
+        populateCartridgeFilter();
+        applyFilters();
+
+        table.hidden = false;
+
+    } catch (error) {
+        console.error("Error loading reloading data:", error);
+        loading.textContent =
+            `Unable to load reloading data: ${error.message}`;
+        loading.classList.add("error");
+        table.hidden = true;
+    }
+}
+
+function buildTableHeaders() {
+    const headerRow = document.getElementById("table-header");
+    headerRow.replaceChildren();
+
+    ["Source", ...headers].forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+}
+
+function populateCartridgeFilter() {
+    const cartridgeFilter = document.getElementById("cartridge-filter");
+
+    // Get unique, non-empty cartridge names.
+    const cartridges = [
+        ...new Set(
+            allRows
+                .map(row => (row[cartridgeColumn] ?? "").trim())
+                .filter(Boolean)
+        )
+    ].sort((a, b) => a.localeCompare(b));
+
+    // Rebuild the dropdown.
+    cartridgeFilter.replaceChildren();
+
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = "All Cartridges";
+    cartridgeFilter.appendChild(allOption);
+
+    cartridges.forEach(cartridge => {
+        const option = document.createElement("option");
+        option.value = cartridge;
+        option.textContent = cartridge;
+        cartridgeFilter.appendChild(option);
+    });
+}
+
+function applyFilters() {
+    const sourceFilter = document.getElementById("source-filter").value;
+    const cartridgeFilter =
+        document.getElementById("cartridge-filter").value;
+
+    const filteredRows = allRows.filter(row => {
+        const matchesSource =
+            sourceFilter === "all" || row.Source === sourceFilter;
+
+        const matchesCartridge =
+            cartridgeFilter === "all" ||
+            (row[cartridgeColumn] ?? "").trim() === cartridgeFilter;
+
+        return matchesSource && matchesCartridge;
+    });
+
+    renderTable(filteredRows);
+
+    const loading = document.getElementById("loading");
+    loading.classList.remove("error");
+    loading.textContent =
+        `Showing ${filteredRows.length} of ${allRows.length} entries.`;
+}
+
+function renderTable(rows) {
+    const tableBody = document.getElementById("table-body");
+    tableBody.replaceChildren();
+
+    rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        // Source column.
+        const sourceCell = document.createElement("td");
+        sourceCell.textContent = row.Source;
+        tr.appendChild(sourceCell);
+
+        // CSV data columns.
+        headers.forEach(header => {
+            const td = document.createElement("td");
+            td.textContent = row[header] ?? "";
+            tr.appendChild(td);
+        });
+
+        tableBody.appendChild(tr);
+    });
+}
+
+// Update the table whenever either dropdown changes.
+document.getElementById("source-filter").addEventListener(
+    "change",
+    applyFilters
+);
+
+document.getElementById("cartridge-filter").addEventListener(
+    "change",
+    applyFilters
+);
+
+loadReloadingData();

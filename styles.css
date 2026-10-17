@@ -104,7 +104,7 @@ body {
   flex-direction: column;
 }
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
@@ -114,7 +114,7 @@ body {
   margin-bottom: 1.5rem;
   color: #d4af37;
   border-bottom: 1px solid #2e3640;
-  padding-bottom: 3rem;
+  padding-bottom: 1rem;
 }
 
 .features-grid {
@@ -391,6 +391,106 @@ footer {
     margin-top: 0.75rem;
 }
 
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.filter-group label {
+    color: #c4ccd5;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filter-group select {
+    min-width: 180px;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #3a424c;
+    border-radius: 6px;
+    background-color: #1c2026;
+    color: #e0e6ed;
+    font: inherit;
+}
+
+.filter-group select:focus {
+    border-color: #d4af37;
+    outline: 2px solid rgba(212, 175, 55, 0.35);
+}
+
+#loading {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0 1.5rem;
+    color: #9aa5b1;
+}
+
+.table-container {
+    width: calc(100% - 3rem);
+    max-width: 1200px;
+    margin: 1rem auto 3rem;
+    overflow-x: auto;
+    border: 1px solid #3a424c;
+    border-radius: 8px;
+    background-color: #1c2026;
+}
+
+#reloading-table {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+    table-layout: auto;
+    color: #e0e6ed;
+    text-align: left;
+}
+
+#reloading-table th,
+#reloading-table td {
+    padding: 0.65rem 0.75rem;
+    border-right: 1px solid #3a424c;
+    border-bottom: 1px solid #3a424c;
+    white-space: normal;
+    overflow-wrap:normal;
+}
+
+#reloading-table th {
+    background-color: #252b33;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+#reloading-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+#reloading-table tbody tr:nth-child(even) {
+    background-color: #20252c;
+}
+
+#reloading-table tbody tr:hover {
+    background-color: #2a3038;
+}
+
+#reloading-table th:last-child,
+#reloading-table td:last-child {
+    border-right: 0;
+}
+
+#reloading-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
 @media (max-width: 650px) {
     .inventory-tools {
         grid-template-columns: 1fr;
@@ -398,5 +498,17 @@ footer {
     .review-tools {
         align-items: stretch;
         flex-direction: column;
+    }
+    .filters {
+        flex-direction: column;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .table-container {
+        margin-right: 1rem;
+        margin-left: 1rem;
     }
 }
