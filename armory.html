@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyArmoryApp - Armory & Ammo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-brand">MyArmoryApp</div>
@@ -37,8 +39,7 @@
                     <div class="inventory-tools">
                         <div class="form-group">
                             <label for="inventorySearch">Search inventory</label>
-                            <input id="inventorySearch" class="input-field" type="search"
-                                   placeholder="Name or caliber">
+                            <input id="inventorySearch" class="input-field" type="search" placeholder="Name or caliber">
                         </div>
                         <div class="form-group">
                             <label for="inventoryTypeFilter">Item type</label>
@@ -53,40 +54,36 @@
 
                 <div class="inventory-results">
                     <div id="inventoryList" class="features-grid">
-                        <article class="card inventory-card"
-                                 data-type="firearm"
-                                 data-search="sporting rifle 1 5.56x45mm">
+                        <article class="card inventory-card" data-type="firearm"
+                            data-search="sporting rifle 1 5.56x45mm">
                             <h3>Sporting Rifle 1</h3>
                             <p>Type: Firearm</p>
                             <p>Caliber: 5.56x45mm</p>
                             <p>Quantity: 1</p>
-                            <button class="cta-btn details-toggle" type="button"
-                                    aria-expanded="false">Show details</button>
-                            <p class="item-details" hidden>Personal inventory entry.</p>
+                            <button class="cta-btn edit-item-btn" type="button">
+                                Edit
+                            </button>
                         </article>
 
-                        <article class="card inventory-card"
-                                 data-type="firearm"
-                                 data-search="sporting pistol 1 9mm">
+                        <article class="card inventory-card" data-type="firearm" data-search="sporting pistol 1 9mm">
                             <h3>Sporting Pistol 1</h3>
                             <p>Type: Firearm</p>
                             <p>Caliber: 9mm</p>
                             <p>Quantity: 1</p>
-                            <button class="cta-btn details-toggle" type="button"
-                                    aria-expanded="false">Show details</button>
-                            <p class="item-details" hidden>Personal inventory entry.</p>
+                            <button class="cta-btn edit-item-btn" type="button">
+                                Edit
+                            </button>
                         </article>
 
-                        <article class="card inventory-card"
-                                 data-type="ammunition"
-                                 data-search="9mm practice ammunition 250 9mm">
+                        <article class="card inventory-card" data-type="ammunition"
+                            data-search="9mm practice ammunition 250 9mm">
                             <h3>Practice Ammunition</h3>
                             <p>Type: Ammunition</p>
                             <p>Caliber: 9mm</p>
                             <p>Quantity: 250 rounds</p>
-                            <button class="cta-btn details-toggle" type="button"
-                                    aria-expanded="false">Show details</button>
-                            <p class="item-details" hidden>Personal ammunition-reserve entry.</p>
+                            <button class="cta-btn edit-item-btn" type="button">
+                                Edit
+                            </button>
                         </article>
                     </div>
                     <p id="inventoryNotice" aria-live="polite"></p>
@@ -94,15 +91,16 @@
             </div>
         </section>
 
-        <dialog class="inventory-dialog" id="addItemDialog"
-                aria-labelledby="add-item-heading">
+        <dialog class="inventory-dialog" id="addItemDialog" aria-labelledby="add-item-heading">
             <section class="feedback-form-box">
                 <div class="dialog-heading-row">
                     <h2 id="add-item-heading">Add an Inventory Item</h2>
                     <button class="dialog-close" id="closeAddItem" type="button"
-                            aria-label="Close add item form">&times;</button>
+                        aria-label="Close add item form">&times;</button>
                 </div>
                 <form id="inventoryForm">
+                    <input id="editingItemId" type="hidden" value="">
+
                     <div class="form-group">
                         <label for="itemName">Item name</label>
                         <input id="itemName" class="input-field" type="text" required maxlength="60">
@@ -118,17 +116,15 @@
 
                     <div class="form-group">
                         <label for="itemCaliber">Caliber or cartridge</label>
-                        <input id="itemCaliber" class="input-field" type="text"
-                               required maxlength="40">
+                        <input id="itemCaliber" class="input-field" type="text" required maxlength="40">
                     </div>
 
                     <div class="form-group" id="quantityGroup">
                         <label for="itemQuantity">Quantity</label>
-                        <input id="itemQuantity" class="input-field" type="number"
-                               min="0" step="1" required>
+                        <input id="itemQuantity" class="input-field" type="number" min="0" step="1" required>
                     </div>
 
-                    <button class="cta-btn" type="submit">Add to Inventory</button>
+                    <button class="cta-btn" id="saveItemButton" type="submit">Add to Inventory</button>
                 </form>
             </section>
         </dialog>
@@ -140,4 +136,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

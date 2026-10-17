@@ -598,7 +598,26 @@ footer {
 #reloading-table tbody tr:last-child td {
     border-bottom: 0;
 }
+/* Inventory card editing button */
+.edit-item-btn {
+    margin-top: auto;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+}
 
+/* Visible keyboard focus for inventory actions */
+.edit-item-btn:focus-visible,
+.cta-btn:focus-visible,
+.dialog-close:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+}
+
+/* Keep form buttons comfortably spaced */
+.inventory-dialog form .cta-btn {
+    margin-top: 0.5rem;
+}
 @media (max-width: 650px) {
     .inventory-layout {
         grid-template-columns: 1fr;

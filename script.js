@@ -79,14 +79,13 @@ function updateReviewFilter() {
         `Showing ${visibleCount} of ${cards.length} reviews`;
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const inventoryList = document.getElementById('inventoryList');
 
-    // Other pages, such as Reviews, do not have an inventory list.
+    // Other pages do not have an inventory list.
     if (!inventoryList) return;
 
-
-    //contants for inventory management
     const searchInput = document.getElementById('inventorySearch');
     const typeFilter = document.getElementById('inventoryTypeFilter');
     const status = document.getElementById('inventoryStatus');
@@ -96,131 +95,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const openAddItemButton = document.getElementById('openAddItem');
     const closeAddItemButton = document.getElementById('closeAddItem');
 
-    openAddItemButton.addEventListener('click', () => addItemDialog.showModal());
-    closeAddItemButton.addEventListener('click', () => addItemDialog.close());
-    addItemDialog.addEventListener('click', event => {
-        if (event.target === addItemDialog) addItemDialog.close();
-    });
-
+    const itemNameInput = document.getElementById('itemName');
     const itemTypeInput = document.getElementById('itemType');
-    const quantityGroup = document.getElementById('quantityGroup');
+    const itemCaliberInput = document.getElementById('itemCaliber');
     const quantityInput = document.getElementById('itemQuantity');
+    const quantityGroup = document.getElementById('quantityGroup');
+    const editingItemId = document.getElementById('editingItemId');
+    const dialogHeading = document.getElementById('add-item-heading');
+    const saveItemButton = document.getElementById('saveItemButton');
 
-    // filter inventory items based on search term and type filter
-    function filterInventory() {
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        const selectedType = typeFilter.value;
-        let visibleCount = 0;
-        // Loop through each inventory card and determine if it should be visible based on the search term and selected type.
-        inventoryList.querySelectorAll('.inventory-card').forEach(card => {
-            const matchesText = card.dataset.search.includes(searchTerm);
-            const matchesType = selectedType === 'all' ||
-                card.dataset.type === selectedType;
-            const isVisible = matchesText && matchesType;
+    let nextItemId = 1;
 
-            card.hidden = !isVisible;
-            if (isVisible) visibleCount++;
-        });
+    // Give existing HTML cards unique IDs and record their quantities.
+    inventoryList.querySelectorAll('.inventory-card').forEach(card => {
+        card.dataset.id = `item-${nextItemId++}`;
 
-        status.textContent = `${visibleCount} inventory item(s) shown.`;
-    }
+        const quantityText = [...card.querySelectorAll('p')]
+            .find(p => p.textContent.trim().startsWith('Quantity:'));
 
-    //user interaction 1: filter inventory items as the user types in the search input.
-    searchInput.addEventListener('input', filterInventory);
-
-    // user interaction 2: filter inventory items when the user changes the type filter.
-    typeFilter.addEventListener('change', filterInventory);
-
-    // user interaction 3: toggle the visibility of item details when the user clicks the "Show details" button.
-    inventoryList.addEventListener('click', event => {
-        const button = event.target.closest('.details-toggle');
-        if (!button) return;
-
-        const card = button.closest('.inventory-card');
-        const details = card.querySelector('.item-details');
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-        details.hidden = isExpanded;
-        button.setAttribute('aria-expanded', String(!isExpanded));
-        button.textContent = isExpanded ? 'Show details' : 'Hide details';//show different text based on the state of the details section
+        card.dataset.quantity = quantityText
+            ? quantityText.textContent
+                .replace(/^Quantity:\s*/, '')
+                .replace(/\s*rounds$/, '')
+            : '';
     });
 
-    function addMouseFeedback(card) {
-        // When the user hovers over an inventory card, update the notice text to indicate which item is being viewed.
-        card.addEventListener('mouseenter', () => {
-            notice.textContent = `Viewing inventory entry: ${card.querySelector('h3').textContent}`;
-        });
-    }
-    // Add mouse feedback to all existing inventory cards.
-    inventoryList.querySelectorAll('.inventory-card').forEach(addMouseFeedback);
-
-    // user interaction 4: handle the submission of the inventory form to add a new item to the inventory list.
-    inventoryForm.addEventListener('submit', event => {
-        event.preventDefault();
-        //get the values from the form inputs
-        const name = document.getElementById('itemName').value.trim();
-        const type = document.getElementById('itemType').value;
-        const caliber = document.getElementById('itemCaliber').value.trim();
-        const quantity = type === 'ammunition'
-            ? Number(document.getElementById('itemQuantity').value)
-            : null;
-        //validate the input values and display an error message if any required fields are missing or invalid
-        if (!name || !caliber ||
-            (type === 'ammunition' &&
-             (!Number.isInteger(quantity) || quantity < 0))) {
-            status.textContent = type === 'ammunition'
-                ? 'Enter a name, caliber, and whole-number quantity of zero or more.'
-                : 'Enter an item name and caliber.';
-            return;
-        }
-        //create a new inventory card element and populate it with the input values
-        const card = document.createElement('article');
-        card.className = 'card inventory-card';
-        card.dataset.type = type;
-        card.dataset.search = `${name} ${caliber}`.toLowerCase();
-        // create and append the heading, type, caliber, quantity, details button, and details paragraph to the card
-        const heading = document.createElement('h3');
-        heading.textContent = name;
-
-        const typeText = document.createElement('p');
-        typeText.textContent = `Type: ${type === 'firearm' ? 'Firearm' : 'Ammunition'}`;
-
-        const caliberText = document.createElement('p');
-        caliberText.textContent = `Caliber: ${caliber}`;
-
-        const quantityText = document.createElement('p');
-        quantityText.textContent = type === 'ammunition'
-            ? `Quantity: ${quantity} rounds`
-            : `Quantity: ${quantity}`;
-        // create a button to toggle the visibility of the item details
-        const detailsButton = document.createElement('button');
-        detailsButton.className = 'cta-btn details-toggle';
-        detailsButton.type = 'button';
-        detailsButton.textContent = 'Show details';
-        detailsButton.setAttribute('aria-expanded', 'false');
-        // create a paragraph to hold the item details, initially hidden
-        const details = document.createElement('p');
-        details.className = 'item-details';
-        details.textContent = 'Personal inventory entry.';
-        details.hidden = true;
-        // append the heading, type, caliber, and quantity (if applicable) to the card
-        card.append(heading, typeText, caliberText);
-        // only append the quantity text if the item is ammunition
-        if (type === 'ammunition') {
-            card.append(quantityText);
-        }
-
-        card.append(detailsButton, details);
-        inventoryList.prepend(card);
-        addMouseFeedback(card);
-        // reset the form, filter the inventory to show the new item, and update the status message
-        inventoryForm.reset();
-        updateQuantityField();
-        filterInventory();
-        status.textContent = `${name} was added to your inventory.`;
-        addItemDialog.close();
-    });
-    //update the visibility and requirements of the quantity input field based on the selected item type
+    // Update the quantity field based on the selected item type.
     function updateQuantityField() {
         const isAmmunition = itemTypeInput.value === 'ammunition';
 
@@ -232,19 +132,235 @@ document.addEventListener('DOMContentLoaded', () => {
             quantityInput.value = '';
         }
     }
-    // add an event listener to the item type input to update the quantity field when the selection changes
+
     itemTypeInput.addEventListener('change', updateQuantityField);
+
+    // Open the form in Add mode.
+    function openAddMode() {
+        inventoryForm.reset();
+        editingItemId.value = '';
+
+        dialogHeading.textContent = 'Add an Inventory Item';
+        saveItemButton.textContent = 'Add to Inventory';
+
+        updateQuantityField();
+        status.textContent = '';
+    }
+
+    openAddItemButton.addEventListener('click', () => {
+        openAddMode();
+        addItemDialog.showModal();
+    });
+
+    closeAddItemButton.addEventListener('click', () => {
+        addItemDialog.close();
+    });
+
+    addItemDialog.addEventListener('click', event => {
+        if (event.target === addItemDialog) {
+            addItemDialog.close();
+        }
+    });
+
+    // Apply the current search and type filters.
+    function filterInventory() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const selectedType = typeFilter.value;
+        let visibleCount = 0;
+
+        inventoryList.querySelectorAll('.inventory-card').forEach(card => {
+            const matchesText = card.dataset.search.includes(searchTerm);
+            const matchesType = selectedType === 'all' ||
+                card.dataset.type === selectedType;
+
+            card.hidden = !(matchesText && matchesType);
+
+            if (!card.hidden) visibleCount++;
+        });
+
+        status.textContent = `${visibleCount} inventory item(s) shown.`;
+    }
+
+    searchInput.addEventListener('input', filterInventory);
+    typeFilter.addEventListener('change', filterInventory);
+
+    // Show a notice when the user hovers over a card.
+    function addMouseFeedback(card) {
+        card.addEventListener('mouseenter', () => {
+            const heading = card.querySelector('h3');
+            notice.textContent =
+                `Viewing inventory entry: ${heading.textContent}`;
+        });
+    }
+
+    inventoryList.querySelectorAll('.inventory-card')
+        .forEach(addMouseFeedback);
+
+    // Create or refresh a card using safe text-based DOM updates.
+    function renderCard(card, item) {
+        card.dataset.id = item.id;
+        card.dataset.type = item.type;
+        card.dataset.quantity = item.quantity ?? '';
+        card.dataset.search =
+            `${item.name} ${item.caliber}`.toLowerCase();
+
+        const heading = document.createElement('h3');
+        heading.textContent = item.name;
+
+        const typeText = document.createElement('p');
+        typeText.textContent =
+            `Type: ${item.type === 'firearm' ? 'Firearm' : 'Ammunition'}`;
+
+        const caliberText = document.createElement('p');
+        caliberText.textContent = `Caliber: ${item.caliber}`;
+
+        const elements = [heading, typeText, caliberText];
+
+        // Preserve quantities for existing firearm entries.
+        if (item.type === 'ammunition' || item.quantity !== null) {
+            const quantityText = document.createElement('p');
+            quantityText.textContent = item.type === 'ammunition'
+                ? `Quantity: ${item.quantity} rounds`
+                : `Quantity: ${item.quantity}`;
+
+            elements.push(quantityText);
+        }
+
+        const editButton = document.createElement('button');
+        editButton.className = 'cta-btn edit-item-btn';
+        editButton.type = 'button';
+        editButton.textContent = 'Edit';
+
+        elements.push(editButton);
+        card.replaceChildren(...elements);
+    }
+
+    // Open the existing dialog in Edit mode for the selected card.
+    inventoryList.addEventListener('click', event => {
+        const button = event.target.closest('.edit-item-btn');
+        if (!button) return;
+
+        const card = button.closest('.inventory-card');
+        if (!card) return;
+
+        const paragraphs = [...card.querySelectorAll('p')];
+
+        const caliberText = paragraphs.find(p =>
+            p.textContent.startsWith('Caliber:')
+        );
+
+        editingItemId.value = card.dataset.id;
+        itemNameInput.value = card.querySelector('h3').textContent;
+        itemTypeInput.value = card.dataset.type;
+        itemCaliberInput.value = caliberText.textContent
+            .replace(/^Caliber:\s*/, '');
+
+        updateQuantityField();
+
+        if (itemTypeInput.value === 'ammunition') {
+            quantityInput.value = card.dataset.quantity;
+        }
+
+        dialogHeading.textContent = 'Edit Inventory Item';
+        saveItemButton.textContent = 'Save Changes';
+        status.textContent = '';
+
+        addItemDialog.showModal();
+    });
+
+    // Handle both adding a new item and editing an existing one.
+    inventoryForm.addEventListener('submit', event => {
+        event.preventDefault();
+
+        const name = itemNameInput.value.trim();
+        const type = itemTypeInput.value;
+        const caliber = itemCaliberInput.value.trim();
+
+        const quantity = type === 'ammunition'
+            ? Number(quantityInput.value)
+            : null;
+
+        if (
+            !name ||
+            !caliber ||
+            (type === 'ammunition' &&
+                (!Number.isInteger(quantity) || quantity < 0))
+        ) {
+            status.textContent = type === 'ammunition'
+                ? 'Enter a name, caliber, and whole-number quantity of zero or more.'
+                : 'Enter an item name and caliber.';
+            return;
+        }
+
+        const id = editingItemId.value;
+        const isEditing = Boolean(id);
+
+        let card;
+
+        if (isEditing) {
+            card = [...inventoryList.querySelectorAll('.inventory-card')]
+                .find(existingCard => existingCard.dataset.id === id);
+
+            if (!card) {
+                status.textContent =
+                    'The item could not be found. Please try again.';
+                return;
+            }
+        } else {
+            card = document.createElement('article');
+            card.className = 'card inventory-card';
+            card.dataset.id = `item-${nextItemId++}`;
+
+            // Set up hover feedback once for the new card.
+            addMouseFeedback(card);
+        }
+
+        // Preserve the existing firearm quantity if applicable.
+        const savedQuantity = type === 'firearm' && isEditing &&
+            card.dataset.quantity !== ''
+                ? card.dataset.quantity
+                : null;
+
+        const item = {
+            id: card.dataset.id,
+            name,
+            type,
+            caliber,
+            quantity: type === 'ammunition' ? quantity : savedQuantity
+        };
+
+        renderCard(card, item);
+
+        if (!isEditing) {
+            inventoryList.prepend(card);
+        }
+
+        inventoryForm.reset();
+        editingItemId.value = '';
+        updateQuantityField();
+        addItemDialog.close();
+
+        filterInventory();
+
+        status.textContent = isEditing
+            ? `${name} was updated successfully.`
+            : `${name} was added to your inventory.`;
+
+        notice.textContent = '';
+    });
+
     updateQuantityField();
-    //initially filter the inventory to show all items when the page loads
     filterInventory();
-// Set up the review filter functionality
+
+    // Keep the Reviews page functionality intact.
     const ratingFilter = document.getElementById('ratingFilter');
-// If the rating filter exists on the page, add an event listener to update the review filter when the selection changes.
+
     if (ratingFilter) {
         ratingFilter.addEventListener('change', updateReviewFilter);
         updateReviewFilter();
     }
 });
+
 // event listener for the feedback form submission
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('ballisticsForm');
