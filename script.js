@@ -92,6 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const status = document.getElementById('inventoryStatus');
     const notice = document.getElementById('inventoryNotice');
     const inventoryForm = document.getElementById('inventoryForm');
+    const addItemDialog = document.getElementById('addItemDialog');
+    const openAddItemButton = document.getElementById('openAddItem');
+    const closeAddItemButton = document.getElementById('closeAddItem');
+
+    openAddItemButton.addEventListener('click', () => addItemDialog.showModal());
+    closeAddItemButton.addEventListener('click', () => addItemDialog.close());
+    addItemDialog.addEventListener('click', event => {
+        if (event.target === addItemDialog) addItemDialog.close();
+    });
 
     const itemTypeInput = document.getElementById('itemType');
     const quantityGroup = document.getElementById('quantityGroup');
@@ -206,8 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
         addMouseFeedback(card);
         // reset the form, filter the inventory to show the new item, and update the status message
         inventoryForm.reset();
+        updateQuantityField();
         filterInventory();
         status.textContent = `${name} was added to your inventory.`;
+        addItemDialog.close();
     });
     //update the visibility and requirements of the quantity input field based on the selected item type
     function updateQuantityField() {
