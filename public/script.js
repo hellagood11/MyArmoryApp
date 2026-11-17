@@ -181,6 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         deleteButton.addEventListener("click", async () => {
+            if (!window.confirm(`Delete "${item.name}" from your inventory?`)) {
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/inventory/${item._id}`, {
                     method: "DELETE"
@@ -280,9 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
             name,
             itemType,
             caliber,
-            quantity,
-            isAvailable: true,
-            notes: ""
+            quantity
         };
 
         const isEditing = Boolean(editingItemId.value);
