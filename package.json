@@ -1,0 +1,27 @@
+{
+  "name": "myarmoryapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mongoCollection.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellagood11/MyArmoryApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hellagood11/MyArmoryApp/issues"
+  },
+  "homepage": "https://github.com/hellagood11/MyArmoryApp#readme",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "mongodb": "^7.9.0"
+  }
+}
