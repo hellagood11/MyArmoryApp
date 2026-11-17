@@ -90,8 +90,6 @@ async function startServer() {
       itemType: item.itemType,
       caliber: item.caliber.trim(),
       quantity: Number(item.quantity),
-      isAvailable: item.isAvailable !== undefined ? Boolean(item.isAvailable) : true,
-      notes: typeof item.notes === "string" ? item.notes.trim() : "",
       addedDate: now,
       lastUpdated: now
     };
@@ -133,8 +131,6 @@ async function startServer() {
             itemType: item.itemType,
             caliber: item.caliber.trim(),
             quantity: Number(item.quantity),
-            isAvailable: item.isAvailable !== undefined ? Boolean(item.isAvailable) : true,
-            notes: typeof item.notes === "string" ? item.notes.trim() : "",
             lastUpdated: new Date()
           }
         }
