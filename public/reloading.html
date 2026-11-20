@@ -43,6 +43,15 @@
         </div>
 
         <p id="loading">Loading and processing data...</p>
+        <div class="premium-gate" id="reloadingPremiumGate">
+            <div>
+                <strong>Premium Feature</strong>
+                <p>Reloading recipes require Premium preview access.</p>
+            </div>
+            <button type="button" class="cta-btn" id="unlockReloadingPreview">
+                Continue with Demo Premium Access
+            </button>
+        </div>
 
         <div class="premium-content-wrapper">
             <div id="reloading-table-container" class="premium-content">
@@ -56,26 +65,9 @@
                 </div>
             </div>
 
-            <div class="premium-overlay" id="reloadingPremiumOverlay">
-                <div class="premium-overlay-card">
-                    <h2>Premium Feature</h2>
-                    <p>Reloading recipes require a Premium subscription.</p>
-                    <button type="button" class="cta-btn" id="unlockReloadingPreview">
-                        Continue with Demo Premium Access
-                    </button>
-                </div>
-            </div>
         </div>
 
-        <div class="table-container">
-            <table id="reloading-table">
-                <thead>
-                    <tr id="table-header"></tr>
-                </thead>
-
-                <tbody id="table-body"></tbody>
-            </table>
-        </div>
+        
     </main>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="script.js"></script>

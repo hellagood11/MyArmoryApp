@@ -767,6 +767,10 @@ function initializePremiumPreview(
         const unlocked =
             sessionStorage.getItem(sessionKey) === "true";
         overlay.hidden = unlocked;
+        const content = overlay.parentElement.querySelector(".premium-content");
+        if (content) {
+            content.classList.toggle("premium-unlocked", unlocked);
+        }
     }
 
     button.addEventListener("click", () => {
@@ -785,8 +789,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     initializePremiumPreview(
-        "ballisticsPremiumOverlay",
-        "unlockBallisticsPreview",
-        BALLISTICS_PREMIUM_KEY
+        "reloadingPremiumGate",
+        "unlockReloadingPreview",
+        "myArmoryDemoPremiumReloading"
     );
 });
