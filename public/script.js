@@ -9,100 +9,115 @@ function escapeHtml(str) {
     }[tag] || tag));
 }
 
-// Review form handling
-function handleFeedbackSubmit(event) {
-    function createReviewCard(review) {
-        const card = document.createElement("article");
-        card.className = "card review-card";
-        card.dataset.rating = String(review.rating);
+function createReviewCard(review) {
+    const card = document.createElement("article");
+    card.className = "card review-card";
+    card.dataset.rating = String(review.rating);
 
-        const header = document.createElement("div");
-        header.className = "review-header";
+    const header = document.createElement("div");
+    header.className = "review-header";
 
-        const reviewerName = document.createElement("strong");
-        reviewerName.textContent = review.name;
+    const name = document.createElement("strong");
+    name.textContent = review.name;
 
-        const rating = document.createElement("span");
-        rating.className = "rating";
-        rating.textContent =
-            "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
-        rating.setAttribute("aria-label", `${review.rating} out of 5 stars`);
+    const rating = document.createElement("span");
+    rating.className = "rating";
+    rating.textContent =
+        "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
+    rating.setAttribute("aria-label", `${review.rating} out of 5 stars`);
 
-        const comments = document.createElement("p");
-        comments.className = "review-text";
-        comments.textContent = review.comments;
+    const comments = document.createElement("p");
+    comments.className = "review-text";
+    comments.textContent = review.comments;
 
-        header.append(reviewerName, rating);
-        card.append(header, comments);
+    header.append(name, rating);
+    card.append(header, comments);
 
-        return card;
+    return card;
+}
+
+async function loadReviews() {
+    const reviewsList = document.getElementById("reviews-list");
+    const reviewStatus = document.getElementById("reviewStatus");
+
+    if (!reviewsList) return;
+
+    const response = await fetch("/api/reviews");
+    if (!response.ok) {
+        throw new Error("Could not load reviews.");
     }
 
-    async function loadReviews() {
-        const reviewsList = document.getElementById("reviews-list");
-        const reviewStatus = document.getElementById("reviewStatus");
+    const reviews = await response.json();
+    reviewsList.replaceChildren(...reviews.map(createReviewCard));
+    updateReviewFilter();
 
-        const response = await fetch("/api/reviews");
-        if (!response.ok) {
-            throw new Error("Could not load reviews.");
-        }
-
-        const reviews = await response.json();
-        reviewsList.replaceChildren(...reviews.map(createReviewCard));
-        updateReviewFilter();
-
-        if (reviewStatus) {
-            reviewStatus.textContent = `${reviews.length} review(s) loaded.`;
-        }
-    }
-
-    async function handleFeedbackSubmit(event) {
-        event.preventDefault();
-
-        const form = document.getElementById("feedbackForm");
-        const reviewStatus = document.getElementById("reviewStatus");
-
-        const review = {
-            name: document.getElementById("reviewerName").value.trim(),
-            rating: Number(document.getElementById("reviewRating").value),
-            comments: document.getElementById("reviewerComments").value.trim()
-        };
-
-        if (
-            !review.name ||
-            review.name.length > 60 ||
-            !Number.isInteger(review.rating) ||
-            review.rating < 1 ||
-            review.rating > 5 ||
-            !review.comments ||
-            review.comments.length > 1000
-        ) {
-            reviewStatus.textContent =
-                "Enter a name, a rating from 1 to 5, and comments up to 1000 characters.";
-            return;
-        }
-
-        try {
-            const response = await fetch("/api/reviews", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(review)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Could not submit review.");
-            }
-
-            form.reset();
-            await loadReviews();
-            reviewStatus.textContent = "Your review was submitted.";
-        } catch (error) {
-            console.error(error);
-            reviewStatus.textContent = error.message || "Could not submit review.";
-        }
+    if (reviewStatus) {
+        reviewStatus.textContent = `${reviews.length} review(s) loaded.`;
     }
 }
+
+async function handleFeedbackSubmit(event) {
+    event.preventDefault();
+
+    const form = document.getElementById("feedbackForm");
+    const reviewStatus = document.getElementById("reviewStatus");
+
+    const review = {
+        name: document.getElementById("reviewerName").value.trim(),
+        rating: Number(document.getElementById("reviewRating").value),
+        comments: document.getElementById("reviewerComments").value.trim()
+    };
+
+    if (
+        !review.name ||
+        review.name.length > 60 ||
+        !Number.isInteger(review.rating) ||
+        review.rating < 1 ||
+        review.rating > 5 ||
+        !review.comments ||
+        review.comments.length > 1000
+    ) {
+        reviewStatus.textContent =
+            "Enter a name, a rating from 1 to 5, and comments up to 1000 characters.";
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(review)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || "Could not submit review.");
+        }
+
+        form.reset();
+        await loadReviews();
+        reviewStatus.textContent = "Your review was submitted.";
+    } catch (error) {
+        console.error(error);
+        reviewStatus.textContent =
+            error.message || "Could not submit review.";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const ratingFilter = document.getElementById("ratingFilter");
+    if (!ratingFilter) return;
+
+    ratingFilter.addEventListener("change", updateReviewFilter);
+
+    loadReviews().catch(error => {
+        console.error(error);
+        const reviewStatus = document.getElementById("reviewStatus");
+        if (reviewStatus) {
+            reviewStatus.textContent = "Unable to load reviews.";
+        }
+    });
+});
 
 function updateReviewFilter() {
     const reviewsList = document.getElementById("reviews-list");
@@ -381,23 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQuantityField();
     loadInventory();
 });
-//Review content loaded
-document.addEventListener("DOMContentLoaded", () => {
-    document.addEventListener("DOMContentLoaded", () => {
-    const ratingFilter = document.getElementById("ratingFilter");
-    if (!ratingFilter) return;
 
-    ratingFilter.addEventListener("change", updateReviewFilter);
-
-    loadReviews().catch(error => {
-        console.error(error);
-        const reviewStatus = document.getElementById("reviewStatus");
-        if (reviewStatus) {
-            reviewStatus.textContent = "Unable to load reviews.";
-        }
-    });
-});
-});
 //ballistics content loaded 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("ballisticsForm");
