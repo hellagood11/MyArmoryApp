@@ -31,6 +31,7 @@ async function startServer() {
   await database.command({ ping: 1 });
 
   const collection = database.collection(MONGODB_COLLECTION);
+  const reviewsCollection = database.collection("reviews");
 
   function isValidInventoryItem(item) {
     return (
@@ -170,6 +171,52 @@ async function startServer() {
     }
   });
 
+  app.get("/api/reviews", async (req, res) => {
+    try {
+      const reviews = await reviewsCollection
+        .find({})
+        .sort({ createdDate: -1 })
+        .toArray();
+
+      res.json(reviews);
+    } catch (error) {
+      console.error("Could not load reviews:", error);
+      res.status(500).json({ error: "Could not load reviews." });
+    }
+  });
+
+  app.post("/api/reviews", async (req, res) => {
+    const { name, rating, comments } = req.body || {};
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length === 0 ||
+      name.trim().length > 60 ||
+      !Number.isInteger(rating) ||
+      rating < 1 ||
+      rating > 5 ||
+      typeof comments !== "string" ||
+      comments.trim().length === 0 ||
+      comments.trim().length > 1000
+    ) {
+      return res.status(400).json({ error: "Review fields are invalid." });
+    }
+
+    const review = {
+      name: name.trim(),
+      rating,
+      comments: comments.trim(),
+      createdDate: new Date()
+    };
+
+    try {
+      const result = await reviewsCollection.insertOne(review);
+      res.status(201).json({ ...review, _id: result.insertedId });
+    } catch (error) {
+      console.error("Could not save review:", error);
+      res.status(500).json({ error: "Could not save review." });
+    }
+  });
   // Serve static front-end files
   app.use(express.static(path.join(__dirname, "public")));
 

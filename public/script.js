@@ -11,41 +11,97 @@ function escapeHtml(str) {
 
 // Review form handling
 function handleFeedbackSubmit(event) {
-    event.preventDefault();
+    function createReviewCard(review) {
+        const card = document.createElement("article");
+        card.className = "card review-card";
+        card.dataset.rating = String(review.rating);
 
-    const nameInput = document.getElementById("reviewerName");
-    const ratingInput = document.getElementById("reviewRating");
-    const commentsInput = document.getElementById("reviewerComments");
+        const header = document.createElement("div");
+        header.className = "review-header";
 
-    const name = nameInput.value.trim();
-    const ratingValue = Number(ratingInput.value);
-    const comments = commentsInput.value.trim();
+        const reviewerName = document.createElement("strong");
+        reviewerName.textContent = review.name;
 
-    if (!name || !Number.isInteger(ratingValue) || ratingValue < 1 || ratingValue > 5 || !comments) {
-        alert("Enter your name, select a rating from 1 to 5, and provide comments.");
-        return;
+        const rating = document.createElement("span");
+        rating.className = "rating";
+        rating.textContent =
+            "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
+        rating.setAttribute("aria-label", `${review.rating} out of 5 stars`);
+
+        const comments = document.createElement("p");
+        comments.className = "review-text";
+        comments.textContent = review.comments;
+
+        header.append(reviewerName, rating);
+        card.append(header, comments);
+
+        return card;
     }
 
-    const stars = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
+    async function loadReviews() {
+        const reviewsList = document.getElementById("reviews-list");
+        const reviewStatus = document.getElementById("reviewStatus");
 
-    const reviewCard = document.createElement("div");
-    reviewCard.className = "card review-card";
-    reviewCard.dataset.rating = String(ratingValue);
-    reviewCard.innerHTML = `
-        <div class="review-header">
-            <strong>${escapeHtml(name)}</strong>
-            <span class="rating">${stars}</span>
-        </div>
-        <p>${escapeHtml(comments)}</p>
-    `;
+        const response = await fetch("/api/reviews");
+        if (!response.ok) {
+            throw new Error("Could not load reviews.");
+        }
 
-    const reviewsList = document.getElementById("reviews-list");
-    if (reviewsList) {
-        reviewsList.prepend(reviewCard);
+        const reviews = await response.json();
+        reviewsList.replaceChildren(...reviews.map(createReviewCard));
         updateReviewFilter();
+
+        if (reviewStatus) {
+            reviewStatus.textContent = `${reviews.length} review(s) loaded.`;
+        }
     }
 
-    document.getElementById("feedbackForm").reset();
+    async function handleFeedbackSubmit(event) {
+        event.preventDefault();
+
+        const form = document.getElementById("feedbackForm");
+        const reviewStatus = document.getElementById("reviewStatus");
+
+        const review = {
+            name: document.getElementById("reviewerName").value.trim(),
+            rating: Number(document.getElementById("reviewRating").value),
+            comments: document.getElementById("reviewerComments").value.trim()
+        };
+
+        if (
+            !review.name ||
+            review.name.length > 60 ||
+            !Number.isInteger(review.rating) ||
+            review.rating < 1 ||
+            review.rating > 5 ||
+            !review.comments ||
+            review.comments.length > 1000
+        ) {
+            reviewStatus.textContent =
+                "Enter a name, a rating from 1 to 5, and comments up to 1000 characters.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/reviews", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(review)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Could not submit review.");
+            }
+
+            form.reset();
+            await loadReviews();
+            reviewStatus.textContent = "Your review was submitted.";
+        } catch (error) {
+            console.error(error);
+            reviewStatus.textContent = error.message || "Could not submit review.";
+        }
+    }
 }
 
 function updateReviewFilter() {
@@ -69,7 +125,7 @@ function updateReviewFilter() {
 
     reviewCount.textContent = `Showing ${visibleCount} of ${cards.length} reviews`;
 }
-
+// armory content loaded 
 document.addEventListener("DOMContentLoaded", () => {
     const inventoryList = document.getElementById("inventoryList");
     if (!inventoryList) return;
@@ -325,15 +381,24 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQuantityField();
     loadInventory();
 });
-
+//Review content loaded
 document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     const ratingFilter = document.getElementById("ratingFilter");
     if (!ratingFilter) return;
 
     ratingFilter.addEventListener("change", updateReviewFilter);
-    updateReviewFilter();
-});
 
+    loadReviews().catch(error => {
+        console.error(error);
+        const reviewStatus = document.getElementById("reviewStatus");
+        if (reviewStatus) {
+            reviewStatus.textContent = "Unable to load reviews.";
+        }
+    });
+});
+});
+//ballistics content loaded 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("ballisticsForm");
     if (!form) return;
