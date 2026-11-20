@@ -749,3 +749,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadReloadingData();
 });
+
+const RELOADING_PREMIUM_KEY = "myArmoryDemoPremiumReloading";
+const BALLISTICS_PREMIUM_KEY = "myArmoryDemoPremiumBallistics";
+
+function initializePremiumPreview(
+    overlayId,
+    buttonId,
+    sessionKey
+) {
+    const overlay = document.getElementById(overlayId);
+    const button = document.getElementById(buttonId);
+
+    if (!overlay || !button) return;
+
+    function applyAccessState() {
+        const unlocked =
+            sessionStorage.getItem(sessionKey) === "true";
+        overlay.hidden = unlocked;
+    }
+
+    button.addEventListener("click", () => {
+        sessionStorage.setItem(sessionKey, "true");
+        applyAccessState();
+    });
+
+    applyAccessState();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializePremiumPreview(
+        "reloadingPremiumOverlay",
+        "unlockReloadingPreview",
+        RELOADING_PREMIUM_KEY
+    );
+
+    initializePremiumPreview(
+        "ballisticsPremiumOverlay",
+        "unlockBallisticsPreview",
+        BALLISTICS_PREMIUM_KEY
+    );
+});

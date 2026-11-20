@@ -22,7 +22,8 @@
 
     <main class="container">
         <h1 class="section-title">Ballistics Calculator</h1>
-        <p class="section-subtitle">Enter bullet weight and muzzle velocity to estimate energy, momentum, and bullet drop.</p>
+        <p class="section-subtitle">Enter bullet weight and muzzle velocity to estimate energy, momentum, and bullet
+            drop.</p>
 
         <section class="feedback-form-box" aria-labelledby="calculator-heading">
             <h2 id="calculator-heading">Calculate ballistic performance</h2>
@@ -59,31 +60,42 @@
 
 
             <section class="card trajectory-card" aria-labelledby="trajectory-heading">
-                <h2 id="trajectory-heading">Estimated bullet drop</h2>
-                <p>Gravity-only estimate from the muzzle, assuming a level bore. This does not account for sight zero,
-                    drag, or
-                    environmental conditions.</p>
-                <div id="graph-output" class="trajectory-chart"></div>
-            </section>     
+                <section class="premium-content-wrapper" aria-label="Premium ballistics information">
+                    <div id="premiumBallisticsContent" class="premium-content">
+                        <section class="card trajectory-card" aria-labelledby="trajectory-heading">
+                            <h2 id="trajectory-heading">Estimated bullet drop</h2>
+                            <p>
+                                Gravity-only estimate from the muzzle, assuming a level bore.
+                                This does not account for sight zero, drag, or environmental conditions.
+                            </p>
+                            <div id="graph-output" class="trajectory-chart"></div>
+                        </section>
 
-            <section class="card drop-table-card">
-                <h2>Bullet Drop Table</h2>
-                <div id="drop-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Distance (yd)</th>
-                                <th>Drop (in)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="drop-table-body">
-                            <!-- Table rows will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                
+                        <section class="card drop-table-card">
+                            <h2>Bullet Drop Table</h2>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Distance (yd)</th>
+                                        <th>Drop (in)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="drop-table-body"></tbody>
+                            </table>
+                        </section>
+                    </div>
+
+                    <div class="premium-overlay" id="ballisticsPremiumOverlay">
+                        <div class="premium-overlay-card">
+                            <h2>Premium Feature</h2>
+                            <p>Detailed bullet drop and drop tables require Premium access.</p>
+                            <button type="button" class="cta-btn" id="unlockBallisticsPreview">
+                                Continue with Demo Premium Access
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </section>
-        </section>
     </main>
 
     <footer class="footer">
