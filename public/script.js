@@ -750,31 +750,23 @@ document.addEventListener("DOMContentLoaded", () => {
     loadReloadingData();
 });
 
-const RELOADING_PREMIUM_KEY = "myArmoryDemoPremiumReloading";
-const BALLISTICS_PREMIUM_KEY = "myArmoryDemoPremiumBallistics";
+const PREMIUM_PREVIEW_KEY = "myArmoryDemoPremiumUnlocked";
 
-function initializePremiumPreview(
-    overlayId,
-    buttonId,
-    sessionKey
-) {
-    const overlay = document.getElementById(overlayId);
+function initializePremiumPreview(gateId, contentId, buttonId) {
+    const gate = document.getElementById(gateId);
+    const content = document.getElementById(contentId);
     const button = document.getElementById(buttonId);
 
-    if (!overlay || !button) return;
+    if (!gate || !content || !button) return;
 
     function applyAccessState() {
-        const unlocked =
-            sessionStorage.getItem(sessionKey) === "true";
-        overlay.hidden = unlocked;
-        const content = overlay.parentElement.querySelector(".premium-content");
-        if (content) {
-            content.classList.toggle("premium-unlocked", unlocked);
-        }
+        const unlocked = sessionStorage.getItem(PREMIUM_PREVIEW_KEY) === "true";
+        gate.hidden = unlocked;
+        content.classList.toggle("premium-unlocked", unlocked);
     }
 
     button.addEventListener("click", () => {
-        sessionStorage.setItem(sessionKey, "true");
+        sessionStorage.setItem(PREMIUM_PREVIEW_KEY, "true");
         applyAccessState();
     });
 
@@ -783,14 +775,14 @@ function initializePremiumPreview(
 
 document.addEventListener("DOMContentLoaded", () => {
     initializePremiumPreview(
-        "reloadingPremiumOverlay",
-        "unlockReloadingPreview",
-        RELOADING_PREMIUM_KEY
+        "reloadingPremiumGate",
+        "reloading-table-container",
+        "unlockReloadingPreview"
     );
 
     initializePremiumPreview(
-        "reloadingPremiumGate",
-        "unlockReloadingPreview",
-        "myArmoryDemoPremiumReloading"
+        "ballisticsPremiumGate",
+        "premiumBallisticsContent",
+        "unlockBallisticsPreview"
     );
 });
